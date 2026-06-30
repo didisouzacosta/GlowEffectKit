@@ -37,16 +37,94 @@ During local DressMatch development, this package can still be linked from a loc
 ## Usage
 
 ```swift
-import GlowEffectKit
-import SwiftUI
+//
+//  ContentView.swift
+//  Example
+//
+//  Created by Didi on 30/06/26.
+//
 
-Button("Generate") {}
-    .glowEffect(
-        isActive: true,
-        peakScale: 1.025,
-        duration: 1.45,
-        glowOpacity: 0.28
-    )
+import SwiftUI
+import GlowEffectKit
+
+struct ContentView: View {
+    var body: some View {
+        HStack(spacing: 32) {
+            RoboFace()
+            Buttons()
+        }
+    }
+}
+
+private struct Buttons: View {
+    var body: some View {
+        VStack(spacing: 16) {
+            Button(action: {}) {
+                Label("Settings", systemImage: "gear")
+                    .padding()
+                    .frame(width: 200)
+            }
+            .glowEffect(isActive: true, lineWidth: 2)
+
+            Button(action: {}) {
+                Label("Play", systemImage: "play")
+                    .padding()
+                    .frame(width: 200)
+            }
+            .glowEffect(isActive: true, cornerRadius: 0, lineWidth: 2)
+        }
+    }
+}
+
+private struct RoboFace: View {
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: 32)
+            .foregroundStyle(.gray.opacity(0.1))
+            .frame(width: 200, height: 200)
+            .glowEffect(
+                isActive: true,
+                lineWidth: 8
+            )
+            .overlay {
+                VStack(spacing: 32) {
+                    HStack(spacing: 16) {
+                        RoundedRectangle(cornerRadius: 8)
+                            .foregroundStyle(.black)
+                            .frame(width: 40, height: 40)
+                            .glowEffect(
+                                isActive: true,
+                                cornerRadius: 8,
+                                lineWidth: 1
+                            )
+
+                        RoundedRectangle(cornerRadius: 8)
+                            .foregroundStyle(.black)
+                            .frame(width: 40, height: 40)
+                            .glowEffect(
+                                isActive: true,
+                                cornerRadius: 8,
+                                lineWidth: 1
+                            )
+                    }
+
+                    RoundedRectangle(cornerRadius: 8)
+                        .foregroundStyle(.black)
+                        .frame(width: 100, height: 20)
+                        .glowEffect(
+                            isActive: true,
+                            cornerRadius: 8,
+                            lineWidth: 1
+                        )
+                        .rotationEffect(.radians(-25))
+                }
+            }
+    }
+}
+
+#Preview {
+    ContentView()
+}
 ```
 
 Use `GlowEffectConfiguration` when the caller needs to tune shader amplitude or frame interval:
