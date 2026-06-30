@@ -1,15 +1,15 @@
 import SwiftUI
 
-public struct GrowEffectModifier: ViewModifier {
+public struct GlowEffectModifier: ViewModifier {
     public let isActive: Bool
-    public let configuration: GrowEffectConfiguration
+    public let configuration: GlowEffectConfiguration
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var isPulsing = false
 
     public init(
         isActive: Bool,
-        configuration: GrowEffectConfiguration = GrowEffectConfiguration()
+        configuration: GlowEffectConfiguration = GlowEffectConfiguration()
     ) {
         self.isActive = isActive
         self.configuration = configuration
@@ -18,7 +18,7 @@ public struct GrowEffectModifier: ViewModifier {
     public func body(content: Content) -> some View {
         content
             .overlay {
-                growGlow
+                glowOverlay
             }
             .scaleEffect(isPulsing ? configuration.peakScale : 1)
             .animation(animation, value: isPulsing)
@@ -37,7 +37,7 @@ public struct GrowEffectModifier: ViewModifier {
         isActive && !reduceMotion
     }
 
-    private var growGlow: some View {
+    private var glowOverlay: some View {
         Group {
             if isActive {
                 if reduceMotion {
@@ -47,7 +47,7 @@ public struct GrowEffectModifier: ViewModifier {
                     )
                 } else {
                     TimelineView(.animation(minimumInterval: configuration.minimumTimelineInterval)) { timeline in
-                        let phase = GrowEffectPhase.phase(
+                        let phase = GlowEffectPhase.phase(
                             at: timeline.date,
                             duration: configuration.duration
                         )
@@ -92,9 +92,9 @@ public struct GrowEffectModifier: ViewModifier {
 
     private func glowingBorder(originUnitPoint: CGPoint, progress: Double) -> some View {
         RoundedRectangle(cornerRadius: configuration.cornerRadius, style: .continuous)
-            .growGlow(fill: glowGradient, lineWidth: configuration.lineWidth)
+            .glowStroke(fill: glowGradient, lineWidth: configuration.lineWidth)
             .modifier(
-                ProgressiveGrowGlow(
+                ProgressiveGlowEffect(
                     originUnitPoint: originUnitPoint,
                     progress: progress,
                     amplitude: configuration.amplitude
@@ -109,7 +109,7 @@ public struct GrowEffectModifier: ViewModifier {
     }
 }
 
-private struct ProgressiveGrowGlow: ViewModifier {
+private struct ProgressiveGlowEffect: ViewModifier {
     let originUnitPoint: CGPoint
     let progress: Double
     let amplitude: Double
@@ -117,7 +117,7 @@ private struct ProgressiveGrowGlow: ViewModifier {
     func body(content: Content) -> some View {
         content.visualEffect { view, proxy in
             view.colorEffect(
-                ShaderLibrary.bundle(.module).growGlow(
+                ShaderLibrary.bundle(.module).glowEffect(
                     .float2(
                         CGPoint(
                             x: originUnitPoint.x * proxy.size.width,
@@ -134,7 +134,7 @@ private struct ProgressiveGrowGlow: ViewModifier {
 }
 
 private extension Shape {
-    func growGlow(
+    func glowStroke(
         fill: some ShapeStyle,
         lineWidth: CGFloat,
         blurRadius: CGFloat = 8
@@ -155,19 +155,19 @@ private extension Shape {
 }
 
 public extension View {
-    func growEffect(
+    func glowEffect(
         isActive: Bool,
         peakScale: CGFloat = 1.035,
         duration: TimeInterval = 1.6,
         glowOpacity: Double = 0.22,
-        glowColors: [Color] = GrowEffectConfiguration.defaultGlowColors,
+        glowColors: [Color] = GlowEffectConfiguration.defaultGlowColors,
         cornerRadius: CGFloat = 34,
         lineWidth: CGFloat = 4
     ) -> some View {
         modifier(
-            GrowEffectModifier(
+            GlowEffectModifier(
                 isActive: isActive,
-                configuration: GrowEffectConfiguration(
+                configuration: GlowEffectConfiguration(
                     peakScale: peakScale,
                     duration: duration,
                     glowOpacity: glowOpacity,
@@ -179,12 +179,12 @@ public extension View {
         )
     }
 
-    func growEffect(
+    func glowEffect(
         isActive: Bool,
-        configuration: GrowEffectConfiguration
+        configuration: GlowEffectConfiguration
     ) -> some View {
         modifier(
-            GrowEffectModifier(
+            GlowEffectModifier(
                 isActive: isActive,
                 configuration: configuration
             )

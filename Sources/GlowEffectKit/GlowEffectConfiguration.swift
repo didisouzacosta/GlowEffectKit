@@ -2,7 +2,7 @@ import CoreGraphics
 import Foundation
 import SwiftUI
 
-public struct GrowEffectConfiguration {
+public struct GlowEffectConfiguration {
     public static let defaultGlowColors: [Color] = [
         .blue,
         .purple,

@@ -4,7 +4,7 @@
 using namespace metal;
 
 [[ stitchable ]]
-half4 growGlow(
+half4 glowEffect(
   float2 position,
   half4 color,
   float2 origin,

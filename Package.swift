@@ -2,28 +2,28 @@
 import PackageDescription
 
 let package = Package(
-    name: "GrowEffectKit",
+    name: "GlowEffectKit",
     platforms: [
         .iOS(.v18),
         .macOS(.v15)
     ],
     products: [
         .library(
-            name: "GrowEffectKit",
-            targets: ["GrowEffectKit"]
+            name: "GlowEffectKit",
+            targets: ["GlowEffectKit"]
         )
     ],
     targets: [
         .target(
-            name: "GrowEffectKit",
+            name: "GlowEffectKit",
             resources: [
                 .process("Resources")
             ]
         ),
         .testTarget(
-            name: "GrowEffectKitTests",
+            name: "GlowEffectKitTests",
             dependencies: [
-                "GrowEffectKit"
+                "GlowEffectKit"
             ]
         )
     ]

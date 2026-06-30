@@ -1,7 +1,7 @@
 import CoreGraphics
 import Foundation
 
-public struct GrowEffectPhase: Equatable {
+public struct GlowEffectPhase: Equatable {
     public let originUnitPoint: CGPoint
     public let progress: Double
 
@@ -10,20 +10,20 @@ public struct GrowEffectPhase: Equatable {
         self.progress = progress
     }
 
-    public static func phase(at date: Date, duration: TimeInterval) -> GrowEffectPhase {
+    public static func phase(at date: Date, duration: TimeInterval) -> GlowEffectPhase {
         phase(
             elapsed: date.timeIntervalSinceReferenceDate,
             duration: duration
         )
     }
 
-    public static func phase(elapsed: TimeInterval, duration: TimeInterval) -> GrowEffectPhase {
+    public static func phase(elapsed: TimeInterval, duration: TimeInterval) -> GlowEffectPhase {
         let normalizedDuration = max(duration, 0.1)
         let normalizedElapsed = elapsed / normalizedDuration
         let fraction = normalizedElapsed - floor(normalizedElapsed)
         let angle = fraction * .pi * 2
 
-        return GrowEffectPhase(
+        return GlowEffectPhase(
             originUnitPoint: CGPoint(
                 x: 0.5 + 0.5 * cos(angle),
                 y: 0.5 + 0.5 * sin(angle)

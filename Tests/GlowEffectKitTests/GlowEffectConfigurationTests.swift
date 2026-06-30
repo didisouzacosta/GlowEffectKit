@@ -1,10 +1,10 @@
 import CoreGraphics
 import XCTest
-@testable import GrowEffectKit
+@testable import GlowEffectKit
 
-final class GrowEffectConfigurationTests: XCTestCase {
+final class GlowEffectConfigurationTests: XCTestCase {
     func testDefaultConfigurationMatchesCurrentDressMatchBehavior() {
-        let configuration = GrowEffectConfiguration()
+        let configuration = GlowEffectConfiguration()
 
         XCTAssertEqual(configuration.peakScale, CGFloat(1.035))
         XCTAssertEqual(configuration.duration, 1.6)
@@ -17,13 +17,13 @@ final class GrowEffectConfigurationTests: XCTestCase {
     }
 
     func testEmptyColorInputFallsBackToDefaultGlowColors() {
-        let configuration = GrowEffectConfiguration(glowColors: [])
+        let configuration = GlowEffectConfiguration(glowColors: [])
 
-        XCTAssertEqual(configuration.effectiveGlowColors.count, GrowEffectConfiguration.defaultGlowColors.count)
+        XCTAssertEqual(configuration.effectiveGlowColors.count, GlowEffectConfiguration.defaultGlowColors.count)
     }
 
     func testCustomConfigurationStoresCallerValues() {
-        let configuration = GrowEffectConfiguration(
+        let configuration = GlowEffectConfiguration(
             peakScale: 1.02,
             duration: 2.1,
             glowOpacity: 0.32,

@@ -1,10 +1,10 @@
 import CoreGraphics
 import XCTest
-@testable import GrowEffectKit
+@testable import GlowEffectKit
 
-final class GrowEffectPhaseTests: XCTestCase {
+final class GlowEffectPhaseTests: XCTestCase {
     func testPhaseStartsAtRightCenterWithMinimumProgress() {
-        let phase = GrowEffectPhase.phase(
+        let phase = GlowEffectPhase.phase(
             elapsed: 0,
             duration: 2
         )
@@ -15,7 +15,7 @@ final class GrowEffectPhaseTests: XCTestCase {
     }
 
     func testPhaseHalfwayMovesToLeftCenterWithPeakProgress() {
-        let phase = GrowEffectPhase.phase(
+        let phase = GlowEffectPhase.phase(
             elapsed: 1,
             duration: 2
         )
@@ -26,7 +26,7 @@ final class GrowEffectPhaseTests: XCTestCase {
     }
 
     func testDurationIsClampedToAvoidDivisionByZero() {
-        let phase = GrowEffectPhase.phase(
+        let phase = GlowEffectPhase.phase(
             elapsed: 0.05,
             duration: 0
         )
