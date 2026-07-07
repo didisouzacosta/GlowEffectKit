@@ -18,7 +18,7 @@ SwiftUI package that provides an animated glow effect backed by a bundled Metal 
 
 ## Installation
 
-Add the package with Swift Package Manager:
+Add the package with Swift Package Manager and pin it to version `1.1.0`:
 
 ```text
 https://github.com/didisouzacosta/GlowEffectKit.git
@@ -30,11 +30,28 @@ If you prefer SSH, use the repository remote:
 git@github.com:didisouzacosta/GlowEffectKit.git
 ```
 
-In Xcode, choose **File > Add Package Dependencies...**, paste the repository URL, and add the `GlowEffectKit` library product to your app target.
+In Xcode, choose **File > Add Package Dependencies...**, paste the repository
+URL, set the dependency rule to **Exact Version**, enter `1.1.0`, and add the
+`GlowEffectKit` library product to your app target.
 
-During local DressMatch development, this package can still be linked from a local checkout. For shared or CI builds, prefer the GitHub package URL above.
+If you manage dependencies in `Package.swift`, add:
+
+```swift
+.package(
+    url: "https://github.com/didisouzacosta/GlowEffectKit.git",
+    exact: "1.1.0"
+)
+```
+
+During local DressMatch development, this package can still be linked from a
+local checkout. For shared or CI builds, prefer the GitHub package URL above
+with an explicit version.
 
 ## Usage
+
+GlowEffectKit supports the default rounded-rectangle glow and any SwiftUI
+`Shape`. Pass `shape:` when the glow should follow a custom outline, such as a
+star, circle, capsule, or any shape backed by a custom `Path`.
 
 ```swift
 //
@@ -51,9 +68,71 @@ struct ContentView: View {
     var body: some View {
         HStack(spacing: 32) {
             RoboFace()
+            Star()
             Buttons()
         }
     }
+}
+
+private struct RoboFace: View {
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: 32)
+            .foregroundStyle(.gray.opacity(0.1))
+            .frame(width: 160, height: 160)
+            .glowEffect(
+                isActive: true,
+                lineWidth: 8
+            )
+            .overlay {
+                VStack(spacing: 32) {
+                    HStack(spacing: 16) {
+                        RoundedRectangle(cornerRadius: 8)
+                            .foregroundStyle(.black)
+                            .frame(width: 30, height: 30)
+                            .glowEffect(
+                                isActive: true,
+                                cornerRadius: 8,
+                                lineWidth: 1
+                            )
+
+                        RoundedRectangle(cornerRadius: 8)
+                            .foregroundStyle(.black)
+                            .frame(width: 30, height: 30)
+                            .glowEffect(
+                                isActive: true,
+                                cornerRadius: 8,
+                                lineWidth: 1
+                            )
+                    }
+
+                    RoundedRectangle(cornerRadius: 8)
+                        .foregroundStyle(.black)
+                        .frame(width: 100, height: 20)
+                        .glowEffect(
+                            isActive: true,
+                            cornerRadius: 8,
+                            lineWidth: 1
+                        )
+                        .rotationEffect(.radians(-25))
+                }
+            }
+    }
+}
+
+private struct Star: View {
+    
+    var body: some View {
+        StarShape()
+            .fill(.clear)
+            .frame(width: 160, height: 160)
+            .glowEffect(
+                isActive: true,
+                shape: StarShape(),
+                lineWidth: 4
+            )
+    }
+    
 }
 
 private struct Buttons: View {
@@ -76,49 +155,36 @@ private struct Buttons: View {
     }
 }
 
-private struct RoboFace: View {
+private struct StarShape: Shape {
+    var points: Int = 5
+    var innerRadiusRatio: CGFloat = 0.42
 
-    var body: some View {
-        RoundedRectangle(cornerRadius: 32)
-            .foregroundStyle(.gray.opacity(0.1))
-            .frame(width: 200, height: 200)
-            .glowEffect(
-                isActive: true,
-                lineWidth: 8
+    func path(in rect: CGRect) -> Path {
+        let center = CGPoint(x: rect.midX, y: rect.midY)
+        let outerRadius = min(rect.width, rect.height) / 2
+        let innerRadius = outerRadius * innerRadiusRatio
+        let totalPoints = points * 2
+
+        var path = Path()
+
+        for index in 0..<totalPoints {
+            let radius = index.isMultiple(of: 2) ? outerRadius : innerRadius
+            let angle = CGFloat(index) * .pi * 2 / CGFloat(totalPoints) - .pi / 2
+            let point = CGPoint(
+                x: center.x + radius * cos(angle),
+                y: center.y + radius * sin(angle)
             )
-            .overlay {
-                VStack(spacing: 32) {
-                    HStack(spacing: 16) {
-                        RoundedRectangle(cornerRadius: 8)
-                            .foregroundStyle(.black)
-                            .frame(width: 40, height: 40)
-                            .glowEffect(
-                                isActive: true,
-                                cornerRadius: 8,
-                                lineWidth: 1
-                            )
 
-                        RoundedRectangle(cornerRadius: 8)
-                            .foregroundStyle(.black)
-                            .frame(width: 40, height: 40)
-                            .glowEffect(
-                                isActive: true,
-                                cornerRadius: 8,
-                                lineWidth: 1
-                            )
-                    }
-
-                    RoundedRectangle(cornerRadius: 8)
-                        .foregroundStyle(.black)
-                        .frame(width: 100, height: 20)
-                        .glowEffect(
-                            isActive: true,
-                            cornerRadius: 8,
-                            lineWidth: 1
-                        )
-                        .rotationEffect(.radians(-25))
-                }
+            if index == 0 {
+                path.move(to: point)
+            } else {
+                path.addLine(to: point)
             }
+        }
+
+        path.closeSubpath()
+        
+        return path
     }
 }
 
@@ -126,6 +192,10 @@ private struct RoboFace: View {
     ContentView()
 }
 ```
+
+The `shape:` overload strokes the path produced by the supplied shape. For
+images or complex view hierarchies, pass the shape that represents the outline
+you want the glow to follow.
 
 Use `GlowEffectConfiguration` when the caller needs to tune shader amplitude or frame interval:
 

@@ -4,9 +4,6 @@ public struct GlowEffectModifier: ViewModifier {
     public let isActive: Bool
     public let configuration: GlowEffectConfiguration
 
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var isPulsing = false
-
     public init(
         isActive: Bool,
         configuration: GlowEffectConfiguration = GlowEffectConfiguration()
@@ -16,6 +13,28 @@ public struct GlowEffectModifier: ViewModifier {
     }
 
     public func body(content: Content) -> some View {
+        content.modifier(
+            GlowEffectShapeModifier(
+                isActive: isActive,
+                configuration: configuration,
+                shape: RoundedRectangle(
+                    cornerRadius: configuration.cornerRadius,
+                    style: .continuous
+                )
+            )
+        )
+    }
+}
+
+private struct GlowEffectShapeModifier<GlowShape: Shape>: ViewModifier {
+    let isActive: Bool
+    let configuration: GlowEffectConfiguration
+    let shape: GlowShape
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var isPulsing = false
+
+    func body(content: Content) -> some View {
         content
             .overlay {
                 glowOverlay
@@ -91,8 +110,7 @@ public struct GlowEffectModifier: ViewModifier {
     }
 
     private func glowingBorder(originUnitPoint: CGPoint, progress: Double) -> some View {
-        RoundedRectangle(cornerRadius: configuration.cornerRadius, style: .continuous)
-            .glowStroke(fill: glowGradient, lineWidth: configuration.lineWidth)
+        shape.glowStroke(fill: glowGradient, lineWidth: configuration.lineWidth)
             .modifier(
                 ProgressiveGlowEffect(
                     originUnitPoint: originUnitPoint,
@@ -187,6 +205,44 @@ public extension View {
             GlowEffectModifier(
                 isActive: isActive,
                 configuration: configuration
+            )
+        )
+    }
+
+    func glowEffect<GlowShape: Shape>(
+        isActive: Bool,
+        shape: GlowShape,
+        peakScale: CGFloat = 1.035,
+        duration: TimeInterval = 1.6,
+        glowOpacity: Double = 0.22,
+        glowColors: [Color] = GlowEffectConfiguration.defaultGlowColors,
+        lineWidth: CGFloat = 4
+    ) -> some View {
+        modifier(
+            GlowEffectShapeModifier(
+                isActive: isActive,
+                configuration: GlowEffectConfiguration(
+                    peakScale: peakScale,
+                    duration: duration,
+                    glowOpacity: glowOpacity,
+                    glowColors: glowColors,
+                    lineWidth: lineWidth
+                ),
+                shape: shape
+            )
+        )
+    }
+
+    func glowEffect<GlowShape: Shape>(
+        isActive: Bool,
+        shape: GlowShape,
+        configuration: GlowEffectConfiguration
+    ) -> some View {
+        modifier(
+            GlowEffectShapeModifier(
+                isActive: isActive,
+                configuration: configuration,
+                shape: shape
             )
         )
     }
