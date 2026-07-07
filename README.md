@@ -8,7 +8,7 @@ SwiftUI package that provides an animated glow effect backed by a bundled Metal 
 
 ## Preview
 
-![GlowEffectKit preview](./Resources/preview2.gif)
+![GlowEffectKit preview](./Resources/preview_2.gif)
 
 ## Requirements
 
